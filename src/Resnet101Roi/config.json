@@ -1,0 +1,22 @@
+{
+    "data": {
+        "bs_tra": 32,
+        "bs_tes":100,
+        "img_size": [224, 224]
+    },
+    "model": {
+        "name": "Resnet101Roi",
+        "period": 50
+    },
+    "optim": {
+        "epochs": 200,
+        "warmup": 10,
+        "lr_decay_step":10,
+        "lr_decay_rate":0.1,
+        "lr": 0.0001,
+        "momentum":0.9,
+        "wd": 0.0001,
+        "milestones": [15, 40, 65],
+        "gamma": 0.5
+    }
+}
