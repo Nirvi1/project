@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 """
-File: run.py
+File: training.py
 File Created: 2021-09-20
 Author: Nirvi Badyal
 """
@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.model import get_standard_cross_entropy_loss, get_accuracy, get_focal_loss, get_loss_Triplet
 
 
-def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
+def train(model, training_data_loader, optimizer, verbose=0, device='cpu'):
     if device == 'cpu':
         model.cpu()
     else:
@@ -21,7 +21,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
     running_loss = 0.0
     running_corrects, running_total = 0, 0
     
-    for d in dl_tra:
+    for d in training_data_loader:
         if device == 'cpu':
             inputs, lm, targets = Variable(d['img']), Variable(d['landmark']), Variable(d['attr'])
         else:
@@ -48,7 +48,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
     epoch_acc = float(running_corrects) / 6 / running_total
     return epoch_loss, epoch_acc
 
-def train_roi(model, dl_tra, optimizer, verbose=0, device='cpu', cross=False, triplet_loss = False):
+def train_roi(model, training_data_loader, optimizer, verbose=0, device='cpu', cross=False, triplet_loss = False):
     if device == 'cpu':
         model.cpu()
     else:
@@ -57,7 +57,7 @@ def train_roi(model, dl_tra, optimizer, verbose=0, device='cpu', cross=False, tr
     running_loss = 0.0
     running_corrects, running_total = 0, 0
     
-    for d in dl_tra:
+    for d in training_data_loader:
         if device == 'cpu':
             inputs, lm, targets = Variable(d['img']), Variable(d['landmark']), Variable(d['attr'])
         else:
@@ -90,7 +90,7 @@ def train_roi(model, dl_tra, optimizer, verbose=0, device='cpu', cross=False, tr
     epoch_acc = float(running_corrects) / 6 / running_total
     return epoch_loss, epoch_acc
 
-def eval(model, dl_val, optimizer, verbose=0, device='cpu', cross=False, triplet_loss=False):
+def eval(model, validation_loader, optimizer, verbose=0, device='cpu', cross=False, triplet_loss=False):
     if device == 'cpu':
         model.cpu()
     else:
@@ -99,7 +99,7 @@ def eval(model, dl_val, optimizer, verbose=0, device='cpu', cross=False, triplet
     running_loss = 0.0
     running_corrects, running_total = 0, 0
     
-    for d in dl_val:
+    for d in validation_loader:
         if device == 'cpu':
             inputs, lm, targets = Variable(d['img']), Variable(d['landmark']), Variable(d['attr'])
         else:

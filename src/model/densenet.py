@@ -9,14 +9,14 @@ class ResNet121Model(nn.Module):
     def __init__(self):
         super(ResNet121Model, self).__init__()
 
-        backbone = models.densenet121(pretrained=True)
-        backbone = list(backbone.children())
-        self.features = nn.Sequential(*backbone[0][:-1])
+        model_arch = models.densenet121(pretrained=True)
+        model_arch = list(model_arch.children())
+        self.features = nn.Sequential(*model_arch[0][:-1])
         # grad_set(self.features)
 
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.avg_pooling = nn.AdaptiveAvgPool2d((1, 1))
 
-        fc_in = backbone[-1].in_features
+        fc_in = model_arch[-1].in_features
         for i in range(6):
             fc_attr = nn.Sequential(
                 nn.Dropout(p=0.2),
@@ -27,7 +27,7 @@ class ResNet121Model(nn.Module):
     def forward(self, x):
         x = self.features(x)
 
-        x = self.avgpool(x)
+        x = self.avg_pooling(x)
         x = torch.flatten(x, 1)
 
         output = []
@@ -41,16 +41,16 @@ class DensenetRoi(nn.Module):
     def __init__(self):
         super(DensenetRoi, self).__init__()
 
-        backbone = models.densenet121(pretrained=True)
-        backbone = list(backbone.children())
-        self.features = nn.Sequential(*backbone[0][:-3])
+        model_arch = models.densenet121(pretrained=True)
+        model_arch = list(model_arch.children())
+        self.features = nn.Sequential(*model_arch[0][:-3])
         # grad_set(self.features)
         # DenseBlock3 output: [B, 1024, 14, 14]
-        self.glayer = nn.Sequential(*backbone[0][-3:])
-        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.layer_next = nn.Sequential(*model_arch[0][-3:])
+        self.avg_pooling = nn.AdaptiveAvgPool2d((1, 1))
         # Transition3 ~ DenseBlock4 output: [B, 1024, 1, 1]
 
-        self.roi_pool = RoIPoolNetwork(
+        self.roi_pooling_layer = RoIPoolNetwork(
             output=[2, 2],
             bbox=[1, 1],
             scale=14./224)
@@ -58,9 +58,9 @@ class DensenetRoi(nn.Module):
         self.roi_out = 256
         self.llayer = nn.Linear(in_features=1024*8*4,
                                 out_features=self.roi_out)
-        self.lact = nn.ReLU()
+        self.relu_ac = nn.ReLU()
         
-        fc_in = backbone[-1].in_features
+        fc_in = model_arch[-1].in_features
         self.fusion = nn.Linear(in_features=fc_in + self.roi_out,
                                 out_features=fc_in)
         
@@ -75,11 +75,11 @@ class DensenetRoi(nn.Module):
         x = self.features(x)
         # print(x.shape)
 
-        gx = self.glayer(x)
-        gx = self.avgpool(gx)
+        gx = self.layer_next(x)
+        gx = self.avg_pooling(gx)
         gx = torch.flatten(gx, 1)
 
-        lx = self.roi_pool(x, lm)
+        lx = self.roi_pooling_layer(x, lm)
         lx = torch.flatten(lx, 1)
         lx = self.lact(self.llayer(lx))
 

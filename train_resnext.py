@@ -21,7 +21,7 @@ from src.model import ResNet18Model, get_standard_cross_entropy_loss, get_accura
 from src.utils.config import generate_settings, PATH_TO_SRC
 from src.utils.logger import Logger, ModelLogger, PATH_TO_SAVE
 from src.utils.scheduler import GradualWarmupScheduler
-from src.Resnet18.run import  eval
+from src.Resnet18.training import  eval
 from torch.autograd import Variable
 
 import torch.optim.lr_scheduler as lr_scheduler
@@ -76,11 +76,11 @@ else:
 
 
 print('Initialize Dataset...')
-dl_tra = get_data_tra(
+training_data_loader = get_data_tra(
     data_path=PATH_DATA, 
     batch_size=opt.data.bs_tra,
     img_size=opt.data.img_size)
-dl_val = get_data_val(
+validation_loader = get_data_val(
     data_path=PATH_DATA, 
     batch_size=opt.data.bs_tes,
     img_size=opt.data.img_size)
@@ -89,7 +89,7 @@ dl_val = get_data_val(
 # In[ ]:
 
 
-def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
+def train(model, training_data_loader, optimizer, verbose=0, device='cpu'):
     if device == 'cpu':
         model.cpu()
     else:
@@ -98,7 +98,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
     running_loss = 0.0
     running_corrects, running_total = 0, 0
     i = 0
-    for d in dl_tra:
+    for d in training_data_loader:
         if device == 'cpu':
             inputs, lm, targets = Variable(d['img']), Variable(d['landmark']), Variable(d['attr'])
         else:
@@ -130,7 +130,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 all_acc = [[0, 0,]]
 es = EarlyStopping(patience=10)
 for epoch in range(curr_epoch, opt.optim.epochs):
-    loss_tra, acc_tra = train(model, dl_tra, optimizer, verbose, device)
+    loss_tra, acc_tra = train(model, training_data_loader, optimizer, verbose, device)
     logger.print(f'Epoch {epoch:2d} Train:  Loss: {loss_tra:.4f},  Acc: {acc_tra:.4f}')
     print('Saving Model....')
     torch.save(model.state_dict(), '/ml_model/second/DeepFashion/models/model_' +str(epoch) )
@@ -138,7 +138,7 @@ for epoch in range(curr_epoch, opt.optim.epochs):
     if scheduler is not None:
         scheduler.step()
 
-    loss_val, acc_val = eval(model, dl_val, optimizer, verbose, device)
+    loss_val, acc_val = eval(model, validation_loader, optimizer, verbose, device)
     logger.print(f'Epoch {epoch:2d} Val:  Loss: {loss_val:.4f},  Acc: {acc_val:.4f}')
     model_logger.save_epoch(epoch=epoch, period=opt.model.period)
     model_logger.save_best(epoch=epoch, acc_curr=acc_val)

@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 """
-File: run.py
+File: training.py
 File Created: 2021-09-20
 Author: Nirvi Badyal
 """
@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.model import get_standard_cross_entropy_loss, get_accuracy
 
 
-def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
+def train(model, training_data_loader, optimizer, verbose=0, device='cpu'):
     if device == 'cpu':
         model.cpu()
     else:
@@ -21,7 +21,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
     running_loss = 0.0
     running_corrects, running_total = 0, 0
     
-    for d in dl_tra:
+    for d in training_data_loader:
         if device == 'cpu':
             inputs, lm, targets = Variable(d['img']), Variable(d['landmark']), Variable(d['attr'])
         else:
@@ -49,7 +49,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
     return epoch_loss, epoch_acc
 
 
-def eval(model, dl_val, optimizer, verbose=0, device='cpu'):
+def eval(model, validation_loader, optimizer, verbose=0, device='cpu'):
     if device == 'cpu':
         model.cpu()
     else:
@@ -58,12 +58,12 @@ def eval(model, dl_val, optimizer, verbose=0, device='cpu'):
     running_loss = 0.0
     running_corrects, running_total = 0, 0
     
-    for d in dl_val:
+    for item in validation_loader:
         if device == 'cpu':
-            inputs, lm, targets = Variable(d['img']), Variable(d['landmark']), Variable(d['attr'])
+            inputs, lm, targets = Variable(item['img']), Variable(item['landmark']), Variable(item['attr'])
         else:
-            inputs, lm = Variable(d['img']).cuda(), Variable(d['landmark']).cuda()
-            targets = Variable(d['attr']).cuda()
+            inputs, lm = Variable(item['img']).cuda(), Variable(item['landmark']).cuda()
+            targets = Variable(item['attr']).cuda()
 
         optimizer.zero_grad()
         with torch.set_grad_enabled(False):

@@ -118,8 +118,8 @@ def get_data_tra(data_path=PATH_TO_DATA, batch_size=64, img_size=[224, 224]):
         attr_file="split/train_attr.txt",
         bbox_file="split/train_bbox.txt", 
         landmark_file="split/train_landmards.txt")
-    dl_tra = DataLoader(ds_tra, batch_size=batch_size, shuffle=True, num_workers=8)
-    return dl_tra
+    training_data_loader = DataLoader(ds_tra, batch_size=batch_size, shuffle=True, num_workers=8)
+    return training_data_loader
 
 
 def get_data_val(data_path=PATH_TO_DATA, batch_size=50, img_size=[224, 224]):
@@ -139,8 +139,8 @@ def get_data_val(data_path=PATH_TO_DATA, batch_size=50, img_size=[224, 224]):
         attr_file="split/val_attr.txt",
         bbox_file="split/val_bbox.txt", 
         landmark_file="split/val_landmards.txt")
-    dl_val = DataLoader(ds_val, batch_size=batch_size, shuffle=True, num_workers=8)
-    return dl_val
+    validation_loader = DataLoader(ds_val, batch_size=batch_size, shuffle=True, num_workers=8)
+    return validation_loader
 
 
 def get_data_tes(data_path=PATH_TO_DATA, batch_size=50, img_size=[224, 224]):
