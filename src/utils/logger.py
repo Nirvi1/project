@@ -237,7 +237,7 @@ class ModelNetworkLogger(ABC):
             self.save_state(str(epoch+1), epoch=epoch)
 
     def print_best(self):
-        self.logger.print_on_top(f'[best]  Epoch {self.epoch_best:>3},  Acc: {self.acc_best:>.4f}')
+        self.logger.print_on_top(f'[best]  Epoch {self.epoch_best:>3},  Accuracy:{self.acc_best:>.4f}')
     
     def save_best(self, acc_curr, epoch=-1, verbose=True):
         """

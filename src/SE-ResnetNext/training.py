@@ -42,7 +42,7 @@ def train(model, training_data_loader, optimizer, verbose=0, device='cpu'):
         running_total += inputs.size(0)
         if verbose >= 3:
             acc = corr / 6 / inputs.size(0)
-            print(f'  Batch Train:  Loss: {loss:.4f},  Acc: {acc:.4f}')
+            print(f'  Batch Train:  Loss: {loss:.4f},  Accuracy:{acc:.4f}')
 
     epoch_loss = running_loss / running_total
     epoch_acc = float(running_corrects) / 6 / running_total
@@ -76,7 +76,7 @@ def eval(model, validation_loader, optimizer, verbose=0, device='cpu'):
         running_total += inputs.size(0)
         if verbose >= 3:
             acc = corr / 6 / inputs.size(0)
-            print(f'  Batch Test:  Loss: {loss:.4f},  Acc: {acc:.4f}')
+            print(f'  Batch Test:  Loss: {loss:.4f},  Accuracy:{acc:.4f}')
 
     epoch_loss = running_loss / running_total
     epoch_acc = float(running_corrects) / 6 / running_total

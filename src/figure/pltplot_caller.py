@@ -24,14 +24,14 @@ def plot_dual_call(dir_save):
         s = f.read()
     
     it_tra = re.finditer(
-        r' Train:  Loss: (\d+\.\d+),  Acc: (\d+\.\d+)', s)
+        r' Train:  Loss: (\d+\.\d+),  Accuracy:(\d+\.\d+)', s)
     loss_tra, acc_tra = [], []
     for i in it_tra:
         loss_tra.append(float(i.group(1)))
         acc_tra.append(100 * float(i.group(2)))
 
     it_val = re.finditer(
-        r' Val:  Loss: (\d+\.\d+),  Acc: (\d+\.\d+)', s)
+        r' Val:  Loss: (\d+\.\d+),  Accuracy:(\d+\.\d+)', s)
     loss_val, acc_val = [], []
     for i in it_val:
         loss_val.append(float(i.group(1)))

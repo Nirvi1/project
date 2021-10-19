@@ -70,18 +70,18 @@ scheduler = lr_scheduler.StepLR(optimizer, opt.optim.lr_decay_step, opt.optim.lr
 #    multiplier=1.0,
 #    total_epoch=opt.optim.warmup,
 #    after_scheduler=scheduler_after)
-model_logger = ModelNetworkLogger(logger, prefix='model')
-model_logger.add_tra_model(model, save_init=False)
-model_logger.model_state_load(optimizer=optimizer, scheduler=scheduler, save_init=False)
+log_mod = ModelNetworkLogger(logger, prefix='model')
+log_mod.add_tra_model(model, save_init=False)
+log_mod.model_state_load(optimizer=optimizer, scheduler=scheduler, save_init=False)
 
 if not logger.path_existed:
     curr_epoch = 0
 else:
-    curr_state = model_logger.load_state('model', optimizer=optimizer, scheduler=scheduler)
+    curr_state = log_mod.load_state('model', optimizer=optimizer, scheduler=scheduler)
     curr_epoch = curr_state['epoch']
     optimizer = curr_state['optimizer']
     scheduler = curr_state['scheduler']
-    model = model_logger.model_load(str(curr_round), model=model)
+    model = log_mod.model_load(str(curr_round), model=model)
 
 
 # In[6]:
@@ -131,7 +131,7 @@ def train(model, training_data_loader, optimizer, verbose=0, device='cpu'):
         running_total += inputs.size(0)
         if verbose >= 3:
             acc = corr / 6 / inputs.size(0)
-            print(f'  Batch Train:  Loss: {loss:.4f},  Acc: {acc:.4f}')
+            print(f'  Batch Train:  Loss: {loss:.4f},  Accuracy:{acc:.4f}')
 
     epoch_loss = running_loss / running_total
     epoch_acc = float(running_corrects) / 6 / running_total
@@ -143,7 +143,7 @@ all_acc = [[0, 0,]]
 es = EarlyStopping(patience=10)
 for epoch in range(curr_epoch, opt.optim.epochs):
     loss_tra, acc_tra = train(model, training_data_loader, optimizer, verbose, device)
-    logger.print(f'Epoch {epoch:2d} Train:  Loss: {loss_tra:.4f},  Acc: {acc_tra:.4f}')
+    logger.print(f'Epoch number {epoch:2d} Train:  Loss: {loss_tra:.4f},  Accuracy:{acc_tra:.4f}')
     print('Saving Model....')
     torch.save(model.state_dict(), '/ml_model/second/DeepFashion/models/model_' +str(epoch) )
     print('OK.')
@@ -151,9 +151,9 @@ for epoch in range(curr_epoch, opt.optim.epochs):
         scheduler.step()
 
     loss_val, acc_val = eval(model, validation_loader, optimizer, verbose, device)
-    logger.print(f'Epoch {epoch:2d} Val:  Loss: {loss_val:.4f},  Acc: {acc_val:.4f}')
-    model_logger.save_epoch(epoch=epoch, period=opt.model.period)
-    model_logger.save_best(epoch=epoch, acc_curr=acc_val)
+    logger.print(f'Epoch number {epoch:2d} Val:  Loss: {loss_val:.4f},  Accuracy:{acc_val:.4f}')
+    log_mod.save_epoch(epoch=epoch, period=opt.model.period)
+    log_mod.save_best(epoch=epoch, acc_curr=acc_val)
     #all_acc.append([acc_tra, acc_val])
     # es.step(all_acc[-1][1]):
     #    print(f'Early stopping: epoch={epoch}, count={count}, new_acc_F={all_acc[-1][1]}')
