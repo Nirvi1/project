@@ -79,7 +79,7 @@ scheduler = WarmingUpScheduler(
 #    total_epoch=opt.optim.warmup,
 #    after_scheduler=scheduler_after)
 model_logger = ModelNetworkLogger(logger, prefix='model')
-model_logger.regi_model(model, save_init=False)
+model_logger.add_trained_model(model, save_init=False)
 model_logger.model_state_load(optimizer=optimizer, scheduler=scheduler, save_init=False)
 
 #path = '/ml_model/second/DeepFashion/models/model_91'
