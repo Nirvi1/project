@@ -138,9 +138,9 @@ logger.print(" START TRAINING ")
 for epoch in range(curr_epoch, opt.optim.epochs):
     loss_tra, acc_tra = train(model, training_data_loader, optimizer, verbose, device)
     logger.print(f'Epoch number {epoch:2d} Train:  Loss: {loss_tra:.4f},  Accuracy:{acc_tra:.4f}')
-    print('Saving Model....')
+    print('Saving Model.')
     torch.save(model.state_dict(), '/ml_model/second/DeepFashion/models/model_' +str(epoch) )
-    print('OK.')
+    print('Saved Model')
     if scheduler is not None:
         scheduler.step()
 
