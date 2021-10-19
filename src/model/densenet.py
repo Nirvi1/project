@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision import models
 
-from .helper import ATTR_OUT, grad_set, RoIPoolNetwork
+from .helper import LIST_ATTR, grad_set, RoIPoolNetwork
 
 
 class ResNet121Model(nn.Module):
@@ -21,7 +21,7 @@ class ResNet121Model(nn.Module):
             fc_attr = nn.Sequential(
                 nn.Dropout(p=0.2),
                 nn.Linear(
-                    in_features=fc_in, out_features=ATTR_OUT[i]))
+                    in_features=fc_in, out_features=LIST_ATTR[i]))
             setattr(self, 'fc' + str(i), fc_attr)
 
     def forward(self, x):
@@ -68,7 +68,7 @@ class DensenetRoi(nn.Module):
             fc_attr = nn.Sequential(
                 nn.Dropout(p=0.2),
                 nn.Linear(
-                    in_features=fc_in, out_features=ATTR_OUT[i]))
+                    in_features=fc_in, out_features=LIST_ATTR[i]))
             setattr(self, 'fc' + str(i), fc_attr)
 
     def forward(self, x, lm):

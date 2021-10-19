@@ -11,8 +11,8 @@ import torch.nn.functional as F
 from src.focal_loss import FocalLoss
 import torch
 from torch import nn
-ATTR_OUT = [7, 3, 3, 4, 6, 3]
-W_OUT = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]
+LIST_ATTR = [7, 3, 3, 4, 6, 3]
+LIST_W_ATTR = [1/6, 1/6, 1/6, 1/6, 1/6, 1/6]
 
 
 def grad_set(model, req=False):
@@ -20,7 +20,7 @@ def grad_set(model, req=False):
         param.requires_grad = req
 
 
-def get_acc(output, target):
+def get_accuracy(output, target):
     correct = []
     for i in range(6):
         pred = output[i].argmax(dim=1, keepdim=True)
@@ -37,22 +37,22 @@ def get_standard_cross_entropy_loss(output, target):
         #loss.append(focal_loss)  
         loss.append(F.cross_entropy(output[i], target[:, i]))
        
-    sum_loss = sum([W_OUT[i] * loss[i] for i in range(6)])
+    sum_loss = sum([LIST_W_ATTR[i] * loss[i] for i in range(6)])
     return sum_loss, loss
 
 def get_focal_loss(output, target, gamma=2):
     loss = []
     for i in range(6):
-        fl_func = FocalLoss(class_num=ATTR_OUT[i], gamma=gamma)
+        fl_func = FocalLoss(class_num=LIST_ATTR[i], gamma=gamma)
         loss.append(fl_func.forward(output[i], target[:, i]))
-    sum_loss = sum([W_OUT[i] * loss[i] for i in range(6)])
+    sum_loss = sum([LIST_W_ATTR[i] * loss[i] for i in range(6)])
     return sum_loss, loss
 def get_loss_Triplet(output, target, gamma=2):
     loss = []
     for i in range(6):
         fl_func = TripletLoss(margin=0.3, loss_weight=1.0)
         loss.append(fl_func.forward(output[i], target[:, i]))
-    sum_loss = sum([W_OUT[i] * loss[i] for i in range(6)])
+    sum_loss = sum([LIST_W_ATTR[i] * loss[i] for i in range(6)])
     return sum_loss, loss
 
 class FocalLoss(nn.Module):

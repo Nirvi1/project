@@ -17,7 +17,7 @@ import torch
 from torch import optim
 
 from src.data import get_data_tra, get_data_val, PATH_TO_DATA
-from src.model import ResNet18Model, ResNet101RoI, get_standard_cross_entropy_loss, get_acc
+from src.model import ResNet18Model, ResNet101RoI, get_standard_cross_entropy_loss, get_accuracy
 from src.utils.config import generate_settings, PATH_TO_SRC
 from src.utils.logger import Logger, ModelLogger, PATH_TO_SAVE
 from src.utils.scheduler import GradualWarmupScheduler

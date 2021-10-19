@@ -9,7 +9,7 @@ from torch.autograd import Variable
 
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.model import get_standard_cross_entropy_loss, get_acc, get_focal_loss, get_loss_Triplet
+from src.model import get_standard_cross_entropy_loss, get_accuracy, get_focal_loss, get_loss_Triplet
 
 
 def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
@@ -32,7 +32,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
         with torch.set_grad_enabled(True):
             outputs = model(inputs)
             loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
-            corr, corr_lst = get_acc(outputs, targets)
+            corr, corr_lst = get_accuracy(outputs, targets)
             
             loss.backward()
             optimizer.step()
@@ -73,7 +73,7 @@ def train_roi(model, dl_tra, optimizer, verbose=0, device='cpu', cross=False, tr
               loss, loss_lst = get_loss_Triplet(outputs, targets)
             else:
               loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
-            corr, corr_lst = get_acc(outputs, targets)
+            corr, corr_lst = get_accuracy(outputs, targets)
             
             loss.backward()
             optimizer.step()
@@ -115,7 +115,7 @@ def eval(model, dl_val, optimizer, verbose=0, device='cpu', cross=False, triplet
               loss, loss_lst = get_loss_Triplet(outputs, targets)
             else:
               loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
-            corr, corr_lst = get_acc(outputs, targets)
+            corr, corr_lst = get_accuracy(outputs, targets)
             
         running_loss += loss.item() * inputs.size(0)
         running_corrects += corr

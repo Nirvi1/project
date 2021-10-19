@@ -81,10 +81,10 @@ class FashionDataset(Dataset):
         # label
         if self.attr is not None:
             attr = torch.from_numpy(self.attr[idx])
-            # attr = [F.one_hot(attr[i], num_classes=ATTR_OUT[i]) for i in range(6)]
+            # attr = [F.one_hot(attr[i], num_classes=LIST_ATTR[i]) for i in range(6)]
         else:
             attr =torch.zeros((6,))
-            # attr = [torch.zeros((ATTR_OUT[i],)) for i in range(6)]
+            # attr = [torch.zeros((LIST_ATTR[i],)) for i in range(6)]
         
         data = {'img': img, 'attr': attr, 'landmark': landmark}
         return data

@@ -9,7 +9,7 @@ from torch.autograd import Variable
 
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.model import get_standard_cross_entropy_loss, get_acc
+from src.model import get_standard_cross_entropy_loss, get_accuracy
 
 
 def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
@@ -32,7 +32,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
         with torch.set_grad_enabled(True):
             outputs = model(inputs)
             loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
-            corr, corr_lst = get_acc(outputs, targets)
+            corr, corr_lst = get_accuracy(outputs, targets)
             
             loss.backward()
             optimizer.step()
@@ -69,7 +69,7 @@ def eval(model, dl_val, optimizer, verbose=0, device='cpu'):
         with torch.set_grad_enabled(False):
             outputs = model(inputs)
             loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
-            corr, corr_lst = get_acc(outputs, targets)
+            corr, corr_lst = get_accuracy(outputs, targets)
             
         running_loss += loss.item() * inputs.size(0)
         running_corrects += corr

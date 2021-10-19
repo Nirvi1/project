@@ -17,7 +17,7 @@ import torch
 from torch import optim
 
 from src.data import get_data_tra, get_data_val, PATH_TO_DATA
-from src.model import ResNet18Model, get_standard_cross_entropy_loss, get_acc
+from src.model import ResNet18Model, get_standard_cross_entropy_loss, get_accuracy
 from src.utils.config import generate_settings, PATH_TO_SRC
 from src.utils.logger import Logger, ModelLogger, PATH_TO_SAVE
 from src.utils.scheduler import GradualWarmupScheduler
@@ -109,7 +109,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
         with torch.set_grad_enabled(True):
             outputs = model(inputs)
             loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
-            corr, corr_lst = get_acc(outputs, targets)
+            corr, corr_lst = get_accuracy(outputs, targets)
             
             loss.backward()
             optimizer.step()
