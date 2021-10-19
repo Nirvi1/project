@@ -74,7 +74,7 @@ class FocalLossFunction(nn.Module):
     def __init__(self, class_num, alpha=None, gamma=2, size_average=True):
         super(FocalLossFunction, self).__init__()
 
-        self.alpha = alpha if alpha is not None else 0.25
+        self.alpha = alpha if alpha is not None else 0.6
         self.gamma = gamma
         self.class_num = class_num
         self.size_average = size_average
