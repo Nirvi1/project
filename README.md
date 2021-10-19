@@ -1,4 +1,4 @@
-# deep-fashion2
+# Individual Project
 
 Best accuracy achieved with finetuned ResNext-101 model with spatial attention and RoI based transposed convolution landmark upsampling.
 
