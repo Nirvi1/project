@@ -107,7 +107,7 @@ class ModelNetworkLogger(ABC):
         self.model = model
         return self.model
     
-    def add_trained_model(self, model, save_init=True):
+    def add_tra_model(self, model, save_init=True):
         """
         Get model from parameters.
 

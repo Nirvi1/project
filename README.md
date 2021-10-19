@@ -16,6 +16,8 @@ pip install -r requirements.txt
 
 python3.6 train_resnet_101_roi.py
 
+This will generate best model using focal loss. 
+
 ## Generate the test prediction
 
 python3.6 test.py --model path_to_model

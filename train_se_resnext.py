@@ -71,7 +71,7 @@ scheduler = lr_scheduler.StepLR(optimizer, opt.optim.lr_decay_step, opt.optim.lr
 #    total_epoch=opt.optim.warmup,
 #    after_scheduler=scheduler_after)
 model_logger = ModelNetworkLogger(logger, prefix='model')
-model_logger.add_trained_model(model, save_init=False)
+model_logger.add_tra_model(model, save_init=False)
 model_logger.model_state_load(optimizer=optimizer, scheduler=scheduler, save_init=False)
 
 if not logger.path_existed:
