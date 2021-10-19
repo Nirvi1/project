@@ -29,7 +29,7 @@ def get_acc(output, target):
     return sum_correct, correct
 
 
-def get_loss_NCE(output, target):
+def get_standard_cross_entropy_loss(output, target):
     loss = []
     for i in range(6):
         #focal_obj = FocalLoss()
@@ -40,7 +40,7 @@ def get_loss_NCE(output, target):
     sum_loss = sum([W_OUT[i] * loss[i] for i in range(6)])
     return sum_loss, loss
 
-def get_loss_NFL(output, target, gamma=2):
+def get_focal_loss(output, target, gamma=2):
     loss = []
     for i in range(6):
         fl_func = FocalLoss(class_num=ATTR_OUT[i], gamma=gamma)
@@ -109,31 +109,31 @@ class RoIPoolNetwork(nn.Module):
         self.scale = scale
 
     def mapping(self, i):
-        h1 = self.output_size[0] * (i // 2)
-        h2 = h1 + self.output_size[0]
-        w1 = self.output_size[1] * (i % 2)
-        w2 = w1 + self.output_size[1]
+        h1 = self.output[0] * (i // 2)
+        h2 = h1 + self.output[0]
+        w1 = self.output[1] * (i % 2)
+        w2 = w1 + self.output[1]
         return h1, h2, w1, w2
 
     def forward(self, input, lm):
         batch_size, input_channel = input.size()[0], input.size()[1]
         output = input.new_zeros(
             [batch_size, input_channel, 
-             self.output_size[0] * 4, self.output_size[1] * 2])
+             self.output[0] * 4, self.output[1] * 2])
         for i in range(8):
             # build roi window
             x0, y0 = lm[:, 2*i], lm[:, 2*i+1]
             visible = (x0 > 0).to(int) | (y0 > 0).to(int)
 
-            x1 = torch.floor(x0 * self.spatial_scale) - math.floor(self.box_window[0] / 2)
-            x2 = x1 + math.ceil(self.box_window[0] / 2)
-            y1 = torch.floor(y0 * self.spatial_scale) - math.floor(self.box_window[1] / 2)
-            y2 = y1 + math.ceil(self.box_window[1] / 2)
+            x1 = torch.floor(x0 * self.scale) - math.floor(self.bbox[0] / 2)
+            x2 = x1 + math.ceil(self.bbox[0] / 2)
+            y1 = torch.floor(y0 * self.scale) - math.floor(self.bbox[1] / 2)
+            y2 = y1 + math.ceil(self.bbox[1] / 2)
             rois = torch.stack(
                 [torch.arange(batch_size, device=input.device), x1, x2, y1, y2], dim=1)
             
             out_pool, _ = torch.ops.torchvision.roi_pool(input, rois, 1.0,
-                self.output_size[0], self.output_size[1])
+                self.output[0], self.output[1])
             # out_pool = torch.flatten(output, 1)
             out_pool = (visible * out_pool.T).T
             h1, h2, w1, w2 = self.mapping(i)
@@ -142,8 +142,8 @@ class RoIPoolNetwork(nn.Module):
 
     def __repr__(self):
         tmpstr = self.__class__.__name__ + '('
-        tmpstr += 'output_size=' + str(self.output_size)
-        tmpstr += ', spatial_scale=' + str(self.spatial_scale)
+        tmpstr += 'output=' + str(self.output)
+        tmpstr += ', scale=' + str(self.scale)
         tmpstr += ')'
         return tmpstr
 

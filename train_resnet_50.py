@@ -16,10 +16,10 @@ import numpy as np
 import torch
 from torch import optim
 
-from src.data import get_data_tra, get_data_val, PATH_DATA_LOCAL
-from src.model import ResNet18Model, get_loss_NCE, get_acc
-from src.utils.config import prepare_opt, PATH_SRC_LOCAL
-from src.utils.logger import Logger, ModelLogger, PATH_SAVE_LOCAL
+from src.data import get_data_tra, get_data_val, PATH_TO_DATA
+from src.model import ResNet18Model, get_standard_cross_entropy_loss, get_acc
+from src.utils.config import generate_settings, PATH_TO_SRC
+from src.utils.logger import Logger, ModelLogger, PATH_TO_SAVE
 from src.utils.scheduler import GradualWarmupScheduler
 from src.Resnet18.run import  eval
 from torch.autograd import Variable
@@ -29,13 +29,13 @@ import torch.optim.lr_scheduler as lr_scheduler
 # In[2]:
 
 
-PATH_DATA = PATH_DATA_LOCAL
-PATH_SRC = PATH_SRC_LOCAL
-PATH_SAVE = PATH_SAVE_LOCAL
+PATH_DATA = PATH_TO_DATA
+PATH_SRC = PATH_TO_SRC
+PATH_SAVE = PATH_TO_SAVE
 
 prj_name = 'Resnet50'
 verbose = 3
-opt = prepare_opt(prj_path=PATH_SRC, prj_name=prj_name)
+opt = generate_settings(prj_path=PATH_SRC, prj_name=prj_name)
 
 flag_run = opt.flag_run
 logger = Logger(prj_name, save_path=PATH_SAVE, flag_run=flag_run)
@@ -108,7 +108,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
         optimizer.zero_grad()
         with torch.set_grad_enabled(True):
             outputs = model(inputs)
-            loss, loss_lst = get_loss_NCE(outputs, targets)
+            loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
             corr, corr_lst = get_acc(outputs, targets)
             
             loss.backward()

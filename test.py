@@ -1,14 +1,14 @@
-from src.data.fashion import get_data_tes, PATH_DATA_LOCAL
+from src.data.fashion import get_data_tes, PATH_TO_DATA
 
 from torch import optim
-from src.utils.config import prepare_opt, PATH_SRC_LOCAL
+from src.utils.config import generate_settings, PATH_TO_SRC
 prj_name = 'Resnet34Roi'
-opt = prepare_opt(prj_path=PATH_SRC_LOCAL, prj_name=prj_name)
+opt = generate_settings(prj_path=PATH_TO_SRC, prj_name=prj_name)
 
 from tqdm import tqdm
 
 dl_tes = get_data_tes(
-    data_path=PATH_DATA_LOCAL, 
+    data_path=PATH_TO_DATA, 
     batch_size=opt.data.bs_tes,
     img_size=opt.data.img_size)
 

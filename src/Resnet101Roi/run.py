@@ -9,7 +9,7 @@ from torch.autograd import Variable
 
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from src.model import get_loss_NCE, get_acc, get_loss_NFL, get_loss_Triplet
+from src.model import get_standard_cross_entropy_loss, get_acc, get_focal_loss, get_loss_Triplet
 
 
 def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
@@ -31,7 +31,7 @@ def train(model, dl_tra, optimizer, verbose=0, device='cpu'):
         optimizer.zero_grad()
         with torch.set_grad_enabled(True):
             outputs = model(inputs)
-            loss, loss_lst = get_loss_NCE(outputs, targets)
+            loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
             corr, corr_lst = get_acc(outputs, targets)
             
             loss.backward()
@@ -68,11 +68,11 @@ def train_roi(model, dl_tra, optimizer, verbose=0, device='cpu', cross=False, tr
         with torch.set_grad_enabled(True):
             outputs = model(inputs, lm)
             if cross == False:
-              loss, loss_lst = get_loss_NFL(outputs, targets)
+              loss, loss_lst = get_focal_loss(outputs, targets)
             elif triplet_loss == True:
               loss, loss_lst = get_loss_Triplet(outputs, targets)
             else:
-              loss, loss_lst = get_loss_NCE(outputs, targets)
+              loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
             corr, corr_lst = get_acc(outputs, targets)
             
             loss.backward()
@@ -110,11 +110,11 @@ def eval(model, dl_val, optimizer, verbose=0, device='cpu', cross=False, triplet
         with torch.set_grad_enabled(True):
             outputs = model(inputs, lm)
             if cross==False:
-              loss, loss_lst = get_loss_NFL(outputs, targets)
+              loss, loss_lst = get_focal_loss(outputs, targets)
             elif triplet_loss == True:
               loss, loss_lst = get_loss_Triplet(outputs, targets)
             else:
-              loss, loss_lst = get_loss_NCE(outputs, targets)
+              loss, loss_lst = get_standard_cross_entropy_loss(outputs, targets)
             corr, corr_lst = get_acc(outputs, targets)
             
         running_loss += loss.item() * inputs.size(0)

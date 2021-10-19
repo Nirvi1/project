@@ -17,7 +17,7 @@ import torchvision.transforms as transforms
 
 FashionMEAN = [0.485, 0.456, 0.406]
 FashionSTD = [0.229, 0.224, 0.225]
-PATH_DATA_LOCAL = "/ml_model/second/DeepFashion/data"
+PATH_TO_DATA = "/ml_model/second/DeepFashion/data"
 
 
 class FashionDataset(Dataset):
@@ -93,7 +93,7 @@ class FashionDataset(Dataset):
         return len(self.img_lst)
 
 
-def get_data_tra(data_path=PATH_DATA_LOCAL, batch_size=64, img_size=[224, 224]):
+def get_data_tra(data_path=PATH_TO_DATA, batch_size=64, img_size=[224, 224]):
     trans_tra = transforms.Compose(
         [ transforms.Resize(img_size),
          #transforms.RandomCrop((112,112)), 
@@ -122,7 +122,7 @@ def get_data_tra(data_path=PATH_DATA_LOCAL, batch_size=64, img_size=[224, 224]):
     return dl_tra
 
 
-def get_data_val(data_path=PATH_DATA_LOCAL, batch_size=50, img_size=[224, 224]):
+def get_data_val(data_path=PATH_TO_DATA, batch_size=50, img_size=[224, 224]):
     trans_val = transforms.Compose(
         [
          transforms.Resize(img_size),
@@ -143,7 +143,7 @@ def get_data_val(data_path=PATH_DATA_LOCAL, batch_size=50, img_size=[224, 224]):
     return dl_val
 
 
-def get_data_tes(data_path=PATH_DATA_LOCAL, batch_size=50, img_size=[224, 224]):
+def get_data_tes(data_path=PATH_TO_DATA, batch_size=50, img_size=[224, 224]):
     trans_tes = transforms.Compose(
         [transforms.Resize(img_size),
          transforms.ToTensor()])

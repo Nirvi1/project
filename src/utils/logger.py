@@ -14,11 +14,11 @@ from dotmap import DotMap
 import torch
 
 
-PATH_SAVE_LOCAL = "/ml_model/second/DeepFashion/save/"
+PATH_TO_SAVE = "/ml_model/second/DeepFashion/save/"
 
 
 class Logger(ABC):
-    def __init__(self, prj_name, save_path=PATH_SAVE_LOCAL, flag_run=''):
+    def __init__(self, prj_name, save_path=PATH_TO_SAVE, flag_run=''):
         super(Logger, self).__init__()
         
         # init log directory
