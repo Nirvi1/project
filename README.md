@@ -15,4 +15,6 @@ python3.6 train_resnet_101_roi.py
 
 ## Generate the test prediction
 
-python3.6 test.py
+python3.6 test.py --model path_to_model
+
+See prediction.txt generated
