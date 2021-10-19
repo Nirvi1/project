@@ -92,7 +92,7 @@ def sigmoid_focal_loss(pred,
     return loss
 
 
-class FocalLoss(nn.Module):
+class FocalLossFunction(nn.Module):
 
     def __init__(self,
                  use_sigmoid=True,
@@ -119,7 +119,7 @@ class FocalLoss(nn.Module):
         loss_weight : float, optional
             Weight of loss. Defaults to 1.0.
         """
-        super(FocalLoss, self).__init__()
+        super(FocalLossFunction, self).__init__()
         assert use_sigmoid is True, 'Only sigmoid focal loss supported now.'
         self.use_sigmoid = use_sigmoid
         self.gamma = gamma

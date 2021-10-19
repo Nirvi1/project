@@ -1,7 +1,7 @@
 {
     "data": {
-        "bs_tra": 32,
-        "bs_tes": 50,
+        "training_batch_size": 32,
+        "test_batch_size": 50,
         "img_size": [224, 224]
     },
     "model": {

@@ -4,10 +4,10 @@ import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 
-class FocalLoss(nn.Module):
+class FocalLossFunction(nn.Module):
     '''Multi-class Focal loss implementation'''
     def __init__(self, gamma=2, weight=None):
-        super(FocalLoss, self).__init__()
+        super(FocalLossFunction, self).__init__()
         self.gamma = gamma
         self.weight = weight
 

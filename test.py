@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 dl_tes = get_data_tes(
     data_path=PATH_TO_DATA, 
-    batch_size=opt.data.bs_tes,
+    batch_size=opt.data.test_batch_size,
     img_size=opt.data.img_size)
 
 import torch

@@ -67,14 +67,14 @@ class Logger(ABC):
             f.write(str(s) + '\n')
             f.write(temp)
     
-    def save_opt(self, opt):
+    def save_settings(self, opt):
         with open(self.file_config, 'a') as f:
             json.dump(opt.toDict(), fp=f, indent=4, sort_keys=False)
         print("Option saved.")
         print("Config path: {}".format(self.file_config))
         print("Option dict: {}\n".format(opt.toDict()))
 
-    def load_opt(self):
+    def load_settings(self):
         with open(self.file_config, 'r') as config_file:
             opt = DotMap(json.load(config_file))
         print("Option loaded.")
@@ -83,12 +83,12 @@ class Logger(ABC):
         return opt
 
 
-class ModelLogger(ABC):
+class ModelNetworkLogger(ABC):
     """
     Log, save, and load training states, with given path and certain prefix.
     """
     def __init__(self, logger, prefix='model', state_only=True):
-        super(ModelLogger, self).__init__()
+        super(ModelNetworkLogger, self).__init__()
         self.logger = logger
         self.prefix = prefix
         self.state_only = state_only
@@ -119,13 +119,13 @@ class ModelLogger(ABC):
         if save_init:
             self.save('0')
 
-    def regi_state(self, optimizer=None, scheduler=None, save_init=True):
+    def model_state_load(self, optimizer=None, scheduler=None, save_init=True):
         self.optimizer = optimizer
         self.scheduler = scheduler
         if save_init:
             self.save_state('0')
     
-    def load_model(self, *suffix, model=None, path_force=None):
+    def model_load(self, *suffix, model=None, path_force=None):
         """
         Get model from file.
         """

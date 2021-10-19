@@ -5,6 +5,9 @@ Fashion landmarks defined on clothes provides crucial information to understand 
 
 Best accuracy achieved with finetuned ResNext-101 model with spatial attention and RoI based transposed convolution landmark upsampling.
 
+## Setup
+
+Add PATH_TO_SAVE variable value in logger.py, and also create models folder in current directory.
 ## Install pip dependencies
 
 pip install -r requirements.txt

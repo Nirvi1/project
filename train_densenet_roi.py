@@ -19,8 +19,8 @@ from torch import optim
 from src.data import get_data_tra, get_data_val, PATH_TO_DATA
 from src.model import DensenetRoi, get_standard_cross_entropy_loss, get_accuracy
 from src.utils.config import generate_settings, PATH_TO_SRC
-from src.utils.logger import Logger, ModelLogger, PATH_TO_SAVE
-from src.utils.scheduler import GradualWarmupScheduler
+from src.utils.logger import Logger, ModelNetworkLogger, PATH_TO_SAVE
+from src.utils.scheduler import WarmingUpScheduler
 from src.DensenetRoi.training import  eval, train_roi
 from torch.autograd import Variable
 
@@ -43,10 +43,10 @@ logger.print(" START ")
 if not logger.path_existed:
     # newly run
     opt.flag_run = logger.flag_run
-    logger.save_opt(opt)
+    logger.save_settings(opt)
 else:
     # continue from checkpoint
-    opt = logger.load_opt()
+    opt = logger.load_settings()
     opt.device = device
 
 
@@ -62,7 +62,7 @@ scheduler_after = optim.lr_scheduler.MultiStepLR(
     optimizer,
     milestones=opt.optim.milestones,
     gamma=opt.optim.gamma)
-scheduler = GradualWarmupScheduler(
+scheduler = WarmingUpScheduler(
     optimizer,
     multiplier=1.0,
     total_epoch=opt.optim.warmup,
@@ -73,14 +73,14 @@ scheduler = GradualWarmupScheduler(
 #    optimizer,
 #    milestones=opt.optim.milestones,
 #    gamma=opt.optim.gamma)
-#scheduler = GradualWarmupScheduler(
+#scheduler = WarmingUpScheduler(
 #    optimizer,
 #    multiplier=1.0,
 #    total_epoch=opt.optim.warmup,
 #    after_scheduler=scheduler_after)
-model_logger = ModelLogger(logger, prefix='model')
+model_logger = ModelNetworkLogger(logger, prefix='model')
 model_logger.regi_model(model, save_init=False)
-model_logger.regi_state(optimizer=optimizer, scheduler=scheduler, save_init=False)
+model_logger.model_state_load(optimizer=optimizer, scheduler=scheduler, save_init=False)
 
 if not logger.path_existed:
     curr_epoch = 0
@@ -89,7 +89,7 @@ else:
     curr_epoch = curr_state['epoch']
     optimizer = curr_state['optimizer']
     scheduler = curr_state['scheduler']
-    model = model_logger.load_model(str(curr_round), model=model)
+    model = model_logger.model_load(str(curr_round), model=model)
 
 
 # In[6]:
@@ -98,11 +98,11 @@ else:
 print('Initialize Dataset...')
 training_data_loader = get_data_tra(
     data_path=PATH_DATA, 
-    batch_size=opt.data.bs_tra,
+    batch_size=opt.data.training_batch_size,
     img_size=opt.data.img_size)
 validation_loader = get_data_val(
     data_path=PATH_DATA, 
-    batch_size=opt.data.bs_tes,
+    batch_size=opt.data.test_batch_size,
     img_size=opt.data.img_size)
 
 

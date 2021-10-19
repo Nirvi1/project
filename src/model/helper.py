@@ -8,7 +8,7 @@ import math
 from torch.autograd import Variable
 
 import torch.nn.functional as F
-from src.focal_loss import FocalLoss
+from src.focal_loss import FocalLossFunction
 import torch
 from torch import nn
 LIST_ATTR = [7, 3, 3, 4, 6, 3]
@@ -32,7 +32,7 @@ def get_accuracy(output, target):
 def get_standard_cross_entropy_loss(output, target):
     loss = []
     for i in range(6):
-        #focal_obj = FocalLoss()
+        #focal_obj = FocalLossFunction()
         #focal_loss = focal_obj(output[i], target[:, i])
         #loss.append(focal_loss)  
         loss.append(F.cross_entropy(output[i], target[:, i]))
@@ -43,10 +43,11 @@ def get_standard_cross_entropy_loss(output, target):
 def get_focal_loss(output, target, gamma=2):
     loss = []
     for i in range(6):
-        fl_func = FocalLoss(class_num=LIST_ATTR[i], gamma=gamma)
+        fl_func = FocalLossFunction(class_num=LIST_ATTR[i], gamma=gamma)
         loss.append(fl_func.forward(output[i], target[:, i]))
     sum_loss = sum([LIST_W_ATTR[i] * loss[i] for i in range(6)])
     return sum_loss, loss
+
 def get_loss_Triplet(output, target, gamma=2):
     loss = []
     for i in range(6):
@@ -55,12 +56,12 @@ def get_loss_Triplet(output, target, gamma=2):
     sum_loss = sum([LIST_W_ATTR[i] * loss[i] for i in range(6)])
     return sum_loss, loss
 
-class FocalLoss(nn.Module):
+class FocalLossFunction(nn.Module):
     r"""
-        This criterion is a implemenation of Focal Loss, which is proposed in
+        Implemenation of Focal Loss, which is proposed in paper
         Focal Loss for Dense Object Detection.
             Loss(x, class) = - \alpha (1-softmax(x)[class])^gamma \log(softmax(x)[class])
-        The losses are averaged across observations for each minibatch.
+        The losses are averaged across observations for each batch of 64 size.
         Args:
             alpha(1D Tensor, Variable) : the scalar factor for this criterion
             gamma(float, double) : gamma > 0; reduces the relative loss for well-classiﬁed examples (p > .5),
@@ -71,7 +72,7 @@ class FocalLoss(nn.Module):
     """
 
     def __init__(self, class_num, alpha=None, gamma=2, size_average=True):
-        super(FocalLoss, self).__init__()
+        super(FocalLossFunction, self).__init__()
 
         self.alpha = alpha if alpha is not None else 0.25
         self.gamma = gamma
@@ -83,21 +84,21 @@ class FocalLoss(nn.Module):
         C = inputs.size(1)
         P = F.softmax(inputs)
 
-        class_mask = inputs.data.new(N, C).fill_(0)
-        class_mask = Variable(class_mask)
+        masker = inputs.data.new(N, C).fill_(0)
+        masker = Variable(masker)
         ids = targets.view(-1, 1)
-        class_mask.scatter_(1, ids.data, 1.)
+        masker.scatter_(1, ids.data, 1.)
 
-        probs = (P * class_mask).sum(1).view(-1, 1)
+        probs = (P * masker).sum(1).view(-1, 1)
 
         log_p = probs.log()
 
-        batch_loss = -self.alpha * (torch.pow((1 - probs), self.gamma)) * log_p
+        loss_b = -self.alpha * (torch.pow((1 - probs), self.gamma)) * log_p
 
         if self.size_average:
-            loss = batch_loss.mean()
+            loss = loss_b.mean()
         else:
-            loss = batch_loss.sum()
+            loss = loss_b.sum()
         return loss
 
 class RoIPoolNetwork(nn.Module):
@@ -149,11 +150,6 @@ class RoIPoolNetwork(nn.Module):
 
 class TripletLoss(nn.Module):
     """Triplet loss with hard positive/negative mining.
-    Reference:
-        Hermans et al. In Defense of the Triplet Loss for
-            Person Re-Identification. arXiv:1703.07737.
-    Imported from `<https://github.com/KaiyangZhou/deep-person-reid/blob/
-        master/torchreid/losses/hard_mine_triplet_loss.py>`_.
     Args:
         margin (float, optional): Margin for triplet loss. Default to 0.3.
         loss_weight (float, optional): Weight of the loss. Default to 1.0.
@@ -166,7 +162,7 @@ class TripletLoss(nn.Module):
         self.loss_weight = loss_weight
         self.hard_mining = hard_mining
 
-    def hard_mining_triplet_loss_forward(self, inputs, targets):
+    def hard_mine_forward(self, inputs, targets):
         """
         Args:
             inputs (torch.Tensor): feature matrix with shape
@@ -201,6 +197,6 @@ class TripletLoss(nn.Module):
 
     def forward(self, inputs, targets, **kwargs):
         if self.hard_mining:
-            return self.hard_mining_triplet_loss_forward(inputs, targets)
+            return self.hard_mine_forward(inputs, targets)
         else:
             raise NotImplementedError()
