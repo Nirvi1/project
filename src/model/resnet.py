@@ -4,7 +4,7 @@ import torch.nn.functional as F
 """
 File: resnet.py
 File Created: 2021-09-23
-Author: nyLiao
+Author: Nirvi Badyal
 """
 import torch
 import torch.nn as nn
