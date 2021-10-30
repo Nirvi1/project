@@ -102,7 +102,9 @@ class FocalLossFunction(nn.Module):
         return loss
 
 class RoIPoolNetwork(nn.Module):
-
+    '''
+    ROIPoolNetwork
+    '''
     def __init__(self, output, bbox, scale):
         super(RoIPoolNetwork, self).__init__()
         self.output = output
